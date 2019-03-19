@@ -4,13 +4,8 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import json
 
-
-#Variables that contains the user credentials to access Twitter API 
-access_token = "1102669296709320708-kBmctssiSRU7AvvxBslcDihPS1BCIG"
-access_token_secret = "coZiL3btq8EDGsaOJ34j89BIlDN11BtBERsODPChEqkL7"
-consumer_key = "OGHehhsnT9WQL05ZgqlJ0RoNH"
-consumer_secret = "E816Lpi1aW61vIq4eBWcMnj03fkD0HcmznyYx6jYwtoz15p1DC"
-
+with open('data/keys.json') as json_file:
+    data = json.load(json_file)
 
 # =============================================================================
 # code inspiré de http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
@@ -32,8 +27,8 @@ if __name__ == '__main__':
 
     #This handles Twitter authetification and the connection to Twitter Streaming API
     l = TwitterListener()
-    auth = OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
+    auth = OAuthHandler(data['consumer_key'], data['consumer_secret'])
+    auth.set_access_token(data['access_token'], data['access_token_secret'])
     stream = Stream(auth, l)
 
     #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
