@@ -13,11 +13,11 @@ consumer_secret = "E816Lpi1aW61vIq4eBWcMnj03fkD0HcmznyYx6jYwtoz15p1DC"
 
 
 # =============================================================================
-# code inspiré de http://adilmoujahid.com/posts/2014/07/twitter-analytics/
+# code inspiré de http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
 # =============================================================================
 
 #This is a basic listener that just prints received tweets to stdout.
-class StdOutListener(StreamListener):
+class TwitterListener(StreamListener):
 
     def on_data(self, data):
         tweet = json.loads(data)
@@ -31,7 +31,7 @@ class StdOutListener(StreamListener):
 if __name__ == '__main__':
 
     #This handles Twitter authetification and the connection to Twitter Streaming API
-    l = StdOutListener()
+    l = TwitterListener()
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, l)
