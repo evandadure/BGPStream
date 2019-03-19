@@ -14,6 +14,9 @@ with open('data/keys.json') as json_file:
 #This is a basic listener that just prints received tweets to stdout.
 class TwitterListener(StreamListener):
 
+    def __init__(self):
+        print("commence")
+
     def on_data(self, data):
         tweet = json.loads(data)
         print(tweet)
@@ -31,5 +34,7 @@ if __name__ == '__main__':
     auth.set_access_token(data['access_token'], data['access_token_secret'])
     stream = Stream(auth, l)
 
-    #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
-    stream.filter(follow=['3237083798'])
+    stream.filter(track=['poule'])
+
+
+    #stream.filter(follow=['3237083798'])
