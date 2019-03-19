@@ -21,7 +21,7 @@ class StdOutListener(StreamListener):
 
     def on_data(self, data):
         tweet = json.loads(data)
-        print(tweet["text"])
+        print(tweet)
         return True
 
     def on_error(self, status):
@@ -37,4 +37,4 @@ if __name__ == '__main__':
     stream = Stream(auth, l)
 
     #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
-    stream.filter(track=['test'])
+    stream.filter(follow=['3237083798'])
