@@ -51,6 +51,7 @@ class dataParser():
     def standardize(self, text_tweet, length, first_occur):
         while len(text_tweet) > length:
             text_tweet[3] += text_tweet[4]
+            text_tweet.pop()
             
 
 
