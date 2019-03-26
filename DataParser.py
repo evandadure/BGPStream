@@ -1,19 +1,35 @@
 import mysql.connector
 
+class dataParser():
+    
+    def __init__(self):
+        self.mydb= mysql.connector.connect(
+                       host="tp-epu.univ-savoie.fr",
+                       port="3308",
+                       user="personma",
+                       passwd="rca8v7gd",
+                       database="personma"
+                   )
+    
+    def addToDB(self, tweet):
+        mycursor = mydb.cursor()
+        text_tweet = tweet["text"].split(",")
+        if text_tweet[1] == "OT":
+            return 
+        if text_tweet[1] == "HJ":
+            return
+        if text_tweet[1] == "LK":
+            return
+        sql = "INSERT INTO Tweet (created_at, text, user_ID, user_name, screen_name, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        val = ()
+        mycursor.execute(sql, val)
+        
+        
+        
 
-mydb = mysql.connector.connect(
-  host="tp-epu.univ-savoie.fr",
-  port="3308",
-  user="personma",
-  passwd="rca8v7gd",
-  database="personma"
-)
-mycursor = mydb.cursor()
-
-sql = "INSERT INTO Tweet (created_at, text, user_ID, user_name, screen_name, latitude, longitude) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-val = ()
-mycursor.execute(sql, val)
-
+# =============================================================================
+#               SQL POUR CRÉER LES TABLES
+# =============================================================================
 #DROP TABLE IF EXISTS Hijack;
 #
 #CREATE TABLE Hijack(
