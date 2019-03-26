@@ -2,6 +2,8 @@
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
 from tweepy import Stream
+from tweepy import API
+import tweepy
 import json
 
 with open('data/keys.json') as json_file:
@@ -24,6 +26,18 @@ class TwitterListener(StreamListener):
 
     def on_error(self, status):
         print(status)
+        
+        
+#   only the first 3000 tweets are available
+    def getPreviousTweets(self):
+        api = API(auth)
+        i = 0
+        for tweet in tweepy.Cursor(api.user_timeline,id='3237083798').items():
+            i += 1
+            tweet = tweet._json
+            print(tweet["created_at"], tweet["id"])
+            print(tweet["text"])
+            print(i)
 
 
 if __name__ == '__main__':
@@ -32,9 +46,9 @@ if __name__ == '__main__':
     l = TwitterListener()
     auth = OAuthHandler(data['consumer_key'], data['consumer_secret'])
     auth.set_access_token(data['access_token'], data['access_token_secret'])
-    stream = Stream(auth, l)
+#    stream = Stream(auth, l)
+#
+#    stream.filter(track=['poule'])
 
-    stream.filter(track=['poule'])
-
-
+    l.getPreviousTweets()
     #stream.filter(follow=['3237083798'])

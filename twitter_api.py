@@ -15,16 +15,6 @@ except ImportError:
     import simplejson as json
 
 
-
-
-
-
-
-
-
-
-
-
 # Variables that contains the user credentials to access Twitter API
 
 # ACCESS_TOKEN = '1092775756990742528-f3jdO4dHk6mz74xelnaIR5DanAWPm6'
