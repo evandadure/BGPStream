@@ -21,14 +21,15 @@ class dataParser():
     # =============================================================================
 
     def __init__(self):
-
         self.mydb = mysql.connector.connect(
-            host="tp-epu.univ-savoie.fr",
-            port="3308",
-            user="personma",
-            passwd="rca8v7gd",
-            database="personma"
+                host = "localhost",
+                port = "3306",
+                user = "root",
+                passwd = "root",
+                database = "bgpstreamdb"
         )
+        self.mycursor = self.mydb.cursor()
+
 
 
     def find_nth(self, string, substring, n):
@@ -54,7 +55,6 @@ class dataParser():
 
 
     def addToDB_OT(self, tweet):
-        mycursor = self.mydb.cursor()
         text_tweet = tweet["full_text"].split(",")
         text = text_tweet[2]
         pattern = '\d+'
@@ -64,12 +64,12 @@ class dataParser():
             nbPref = re.findall(pattern, text_tweet[6])[0]
             val = (tweet["id_str"], text, text_tweet[3], text_tweet[4], nbPref)
             sql = "INSERT INTO Outage (id, numAS, nomAS, paysAS, nbPrefixe) VALUES (%s, %s, %s, %s, %s)"
-            mycursor.execute(sql, val)
+            self.mycursor.execute(sql, val)
         else:
             nbPref = re.findall(pattern, text_tweet[5])[0]
             val = (tweet["id_str"], text_tweet[3], text, nbPref)
             sql = "INSERT INTO Outage (id, numAS, nomAS, paysAS, nbPrefixe) VALUES (%s, \'\', %s, %s, %s)"
-            mycursor.execute(sql, val)
+            self.mycursor.execute(sql, val)
             
     def standardize(self, text_tweet, length, first_occur):
         while len(text_tweet) > length:
@@ -77,30 +77,21 @@ class dataParser():
             text_tweet.pop(first_occur+1)
         return text_tweet
 
-    def standardize(self, text_tweet, length, first_occur):
-        while len(text_tweet) > length:
-            text_tweet[first_occur] += "," + text_tweet[first_occur + 1]
-            text_tweet.pop(first_occur + 1)
-        return text_tweet
-
     def addToDB_HJ(self, tweet):
-        mycursor = self.mydb.cursor()
         text_tweet = tweet["full_text"]
         id_tweet = tweet["id_str"]
         as_source = text_tweet[text_tweet.find("prefix") + 9:self.find_nth(text_tweet, " ", 3)]
-        prefixe = text_tweet[self.find_nth(text_tweet, " ", 3) + 1:self.find_nth(text_tweet, ",", 3)]
+        prefix = text_tweet[self.find_nth(text_tweet, " ", 3) + 1:self.find_nth(text_tweet, ",", 3)]
         as_hijack = text_tweet[text_tweet.find(",-,By ") + 8:text_tweet.find(" ", text_tweet.find(",-,By ") + 8)]
-
-        val = (id_tweet, prefixe, as_source, as_hijack)
-        sql = "INSERT INTO Hijack (id, prefixe, numASSource, numASHijack) VALUES (%s, %s, %s, %s)"
+        print("id :", id_tweet, "prefixe :", prefix, "numASSource :", as_source, "numASHijack :", as_hijack)
+        val = (id_tweet, prefix, as_source, as_hijack)
+        sql = "INSERT INTO bgpstreamdb.hijack (id, prefixe, numASSource, numASHijack) VALUES (%s, %s, %s, %s)"
         # sql = "INSERT INTO hijack (id, prefixe, numASSource, numASHijack) VALUES ('"+id_tweet+"','"+prefixe+"','"+as_source+"','"+as_hijack+"')"
-        mycursor.execute(sql, val)
-
-        # mycursor = self.mydb.cursor()
-        # mycursor.execute("SELECT * FROM hijack")
-        # myresult = mycursor.fetchall()
-        # for line in myresult:
-        #     print(line)
+        try:
+            self.mycursor.execute(sql, val)
+            self.mydb.commit()
+        except:
+            print("couldn't add the tweet (id :",id_tweet,")")
 
 #
 # CREATE TABLE Outage(
