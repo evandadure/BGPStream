@@ -32,12 +32,9 @@ class TwitterListener(StreamListener):
 #   only the first 3000 tweets are available
     def getPreviousTweets(self):
         api = API(auth)
-#        tweets = []
-        for tweet in tweepy.Cursor(api.user_timeline,id='3237083798').items(10):
-#            tweets.append(tweet._json)
+        for tweet in tweepy.Cursor(api.user_timeline,id='3237083798').items():
             data = dataParser()
             data.addToDB(tweet._json)
-#        return tweets[0]
 
 
 if __name__ == '__main__':
@@ -49,6 +46,6 @@ if __name__ == '__main__':
 #    stream = Stream(auth, l)
 #
 #    stream.filter(track=['poule'])
+#    stream.filter(follow=['3237083798'])
 
-    print(l.getPreviousTweets())
-    #stream.filter(follow=['3237083798'])
+    l.getPreviousTweets()

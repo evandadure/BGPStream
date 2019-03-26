@@ -36,6 +36,7 @@ class dataParser():
         text_tweet = tweet["text"].split(",")
         text = text_tweet[2]
         pattern = '\d+'
+        print(text_tweet)
         if re.match(pattern, text):
             nbPref = re.findall(pattern, text_tweet[6])[0]
             val = (tweet["id_str"], text, text_tweet[3], text_tweet[4], nbPref)
@@ -44,8 +45,13 @@ class dataParser():
         else:
             nbPref = re.findall(pattern, text_tweet[5])[0]
             val = (tweet["id_str"],  text_tweet[3], text, nbPref)
-            sql = "INSERT INTO Outage (id, numAS, nomAS, paysAS, nbPrefixe) VALUES (%s, 0, %s, %s, %s)"
+            sql = "INSERT INTO Outage (id, numAS, nomAS, paysAS, nbPrefixe) VALUES (%s, \'\', %s, %s, %s)"
             mycursor.execute(sql, val)
+            
+    def standardize(self, text_tweet, length, first_occur):
+        while len(text_tweet) > length:
+            text_tweet[3] += text_tweet[4]
+            
 
 
 # =============================================================================

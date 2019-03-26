@@ -9,3 +9,5 @@ runfile('E:/Cours/Semestre 6/PROJ_632/BGPStream/TwitterListener.py', wdir='E:/Co
 runfile('E:/Cours/Semestre 6/PROJ_632/BGPStream/TwitterListener.py', wdir='E:/Cours/Semestre 6/PROJ_632/BGPStream')
 runfile('E:/Cours/Semestre 6/PROJ_632/BGPStream/DataParser.py', wdir='E:/Cours/Semestre 6/PROJ_632/BGPStream')
 runfile('E:/Cours/Semestre 6/PROJ_632/BGPStream/TwitterListener.py', wdir='E:/Cours/Semestre 6/PROJ_632/BGPStream')
+runfile('E:/Cours/Semestre 6/PROJ_632/BGPStream/DataParser.py', wdir='E:/Cours/Semestre 6/PROJ_632/BGPStream')
+runfile('E:/Cours/Semestre 6/PROJ_632/BGPStream/TwitterListener.py', wdir='E:/Cours/Semestre 6/PROJ_632/BGPStream')
