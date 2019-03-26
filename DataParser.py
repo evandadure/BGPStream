@@ -2,7 +2,24 @@ import re
 import mysql.connector
 
 class dataParser():
-    
+
+# =============================================================================
+#     host="tp-epu.univ-savoie.fr",
+#     port="3308",
+#     user="personma",
+#     passwd="rca8v7gd",
+#     database="personma"
+# =============================================================================
+
+# =============================================================================
+#     host = "localhost",
+#     port = "3306",
+#     user = "root",
+#     passwd = "root",
+#     database = "bgpstreamdb"
+# =============================================================================
+
+
     def __init__(self):
         self.mydb= mysql.connector.connect(
                        host="localhost",
@@ -27,13 +44,14 @@ class dataParser():
         if text_tweet[1] == "LK":
             pass
 
+        
+
     def addToDB_OT(self, tweet):
         mycursor = self.mydb.cursor()
         text_tweet = tweet["text"].split(",")
         text = text_tweet[2]
         pattern = '\d+'
         if re.match(pattern, text):
-            print(re.findall(pattern, text_tweet[6]))
             nbPref = re.findall(pattern, text_tweet[6])[0]
             val = (tweet["id_str"], text, text_tweet[3], text_tweet[4], nbPref)
             sql = "INSERT INTO Outage (id, numAS, nomAS, paysAS, nbPrefixe) VALUES (%s, %s, %s, %s, %s)"
@@ -64,13 +82,6 @@ class dataParser():
         #     print(line)
 
 
-
-# =============================================================================
-#               SQL POUR CRÉER LES TABLES
-# =============================================================================
-#DROP TABLE IF EXISTS Hijack;
-#DROP TABLE IF EXISTS Outage;
-#DROP TABLE IF EXISTS Leak;
 #
 #CREATE TABLE Outage(
 # id varchar(255),
@@ -85,8 +96,6 @@ class dataParser():
 # numASSource varchar(255),
 # numASHijack varchar(255)
 #);
-#
-#
 #CREATE TABLE Leak(
 # id varchar(255),
 # numAS varchar(255),
