@@ -1,3 +1,4 @@
 .idea
 .spyder-py3
+._pycache_
 data/mykeys.json
