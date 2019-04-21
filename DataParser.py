@@ -1,28 +1,19 @@
 from datetime import datetime
 from datetime import timedelta
-import re
 import mysql.connector
 
 
 class dataParser():
 
-    # =============================================================================
-    #     host="tp-epu.univ-savoie.fr",
-    #     port="3308",
-    #     user="personma",
-    #     passwd="rca8v7gd",
-    #     database="personma"
-    # =============================================================================
-
-    # =============================================================================
-    #     host = "localhost",
-    #     port = "3306",
-    #     user = "root",
-    #     passwd = "root",
-    #     database = "bgpstreamdb"
-    # =============================================================================
-
     def __init__(self):
+        """
+        Initializes the dataParser by connecting to the database.
+        ----------
+        Parameters :
+            No parameter.
+        Returns :
+            No return.
+        """
         self.mydb = mysql.connector.connect(
                 host = "localhost",
                 port = "3306",
@@ -34,9 +25,9 @@ class dataParser():
 
     def setDateTime(self,dateTweet):
         """
-        Function that converts the tweet default date format to a date format compatible with MySQL databases (Python datetime)
+        Method that converts the tweet default date format to a date format compatible with MySQL databases (Python datetime)
         For example, "Mon Apr 01 17:09:19 +0000 2019" will be converted in "2019-04-01 18:09:00" (We add one hour to the time
-        because we have UTC+1 in France)
+        because we have UTC+2 in France)
         ----------
         Parameters :
             - dateTweet (str) : the tweet's publication date (and time)
@@ -52,38 +43,61 @@ class dataParser():
         m = dateTweet[dateTweet.find(':') + 1:dateTweet.find(':') + 3]
         d = d.replace(hour=int(h), minute=int(m))
         # We add one hour to the time because we have UTC+1 in France
-        d = d + timedelta(hours=1)
+        d = d + timedelta(hours=2)
         return d
 
     def find_nth(self, string, substring, n):
-        # finds the nth occurence of a substring in a string
+        """
+        Finds the index of the nth occurrence of a substring in a string.
+        ----------
+        Parameters :
+            - string : the haystack string
+            - substring : the needle string
+            - n : the "n"th number (for example, if n = 5, the 5th occurrence of the substring will be found.)
+        Returns :
+            - the index of the substring
+        """
         if (n == 1):
             return string.find(substring)
         else:
             return string.find(substring, self.find_nth(string, substring, n - 1) + 1)
 
     def addToDB(self, tweet):
+        """
+        Redirects to self.addToDB_OT or self.addToDB_HJ, depending on whether it's an Outage, a Hijack, or a Leak.
+        ----------
+        Parameters :
+            - tweet : the tweet to add
+        Returns :
+            No Return
+        """
+        # Separates the text of the tweets to get only the first two letters of this text, which indicates the type of
+        # alert.
         text_tweet = tweet["full_text"].split(",")
         if text_tweet[1] == "OT":
             self.addToDB_OT(tweet)
         if text_tweet[1] == "HJ":
             self.addToDB_HJ(tweet)
+        # We didn't find any example of a Leak tweet on the BGPStream's twitter account, so this case isn't treated by
+        # our program.
         if text_tweet[1] == "LK":
             pass
 
 
-# =============================================================================
-# list index out of range
-# BGP,OT,268434,--No Registry Entry--,-,Outage affected 24 prefixes, https://t.co/SyjUaDYStb
-# =============================================================================
-
-
     def addToDB_OT(self, tweet):
+        """
+        Adds an Outage tweet to the database
+        ----------
+        Parameters :
+            - tweet : the tweet to add
+        Returns :
+            No Return
+        """
         text_tweet = tweet["full_text"]
         id_tweet = tweet["id_str"]
         date_tweet = self.setDateTime(tweet["created_at"])
-        # Sometimes, the AS number is not specified (we only have information about the country) (the 7th character is a
-        # letter and not a number). In this case, we chose to set the country name as the AS name.
+        # Sometimes, the AS number is not specified (we only have information about the country) In this case, the 7th
+        # character is a letter and not a number, so we chose to set the country name as the AS name.
         if(text_tweet[7].isalpha()):
             numAS_tweet = "Unknown"
             # AS Name is between the 3rd and the 4th comma
@@ -93,7 +107,7 @@ class dataParser():
         else:
             # the AS number is between the 2nd and the 3rd comma
             numAS_tweet = text_tweet[self.find_nth(text_tweet, ",", 2) + 1:self.find_nth(text_tweet, ",", 3)]
-            # We analyze the part between the ASN and the ",-," part of the text, which differs from time to time:
+            # We analyze the part between the AS Number and the ",-," part of the text, which differs from time to time:
             AS_name_and_country = text_tweet[self.find_nth(text_tweet, ",", 3) + 1:text_tweet.find(",-,")]
             if(len(AS_name_and_country)>3 and AS_name_and_country[-3] == " " and AS_name_and_country[-2].isupper()):
                 ASName_tweet = AS_name_and_country[:-4]
@@ -110,17 +124,18 @@ class dataParser():
             self.mydb.commit()
         except:
             print("couldn't add the tweet number",id_tweet,"(probably already in the database)")
-            
-    def standardize(self, text_tweet, length, first_occur):
-        while len(text_tweet) > length:
-            text_tweet[first_occur] += "," + text_tweet[first_occur+1]
-            text_tweet.pop(first_occur+1)
-        return text_tweet
+
 
     def addToDB_HJ(self, tweet):
+        """
+        Adds a Hijack tweet to the database
+        ----------
+        Parameters :
+            - tweet : the tweet to add
+        Returns :
+            No Return
+        """
         text_tweet = tweet["full_text"]
-        # print("-----------------------------------")
-        # print(text_tweet)
         id_tweet = tweet["id_str"]
         date_tweet = self.setDateTime(tweet["created_at"])
         # prefix is between the 3rd space and the 3rd comma
@@ -129,7 +144,6 @@ class dataParser():
         as_source = text_tweet[self.find_nth(text_tweet, " ", 2) + 3:self.find_nth(text_tweet, " ", 3)]
         # as_hijack is between the ",-, By" and the first space after ",-, By"
         as_hijack = text_tweet[text_tweet.find(",-,By ") + 8:text_tweet.find(" ", text_tweet.find(",-,By ") + 8)]
-        # print("id :", id_tweet, "date :",date_tweet,"prefixe :", prefix, "numASSource :", as_source, "numASHijack :", as_hijack)
         val = (id_tweet, date_tweet, prefix, as_source, as_hijack)
         sql = "INSERT INTO hijack (id, date, prefixe, numASSource, numASHijack) VALUES (%s, %s, %s, %s, %s)"
 
