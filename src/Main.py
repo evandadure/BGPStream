@@ -1,6 +1,6 @@
 from tweepy import OAuthHandler
-from StreamAPI import StreamAPI
-from SearchAPI import SearchAPI
+from src.StreamAPI import StreamAPI
+from src.SearchAPI import SearchAPI
 import json
 
 
@@ -15,7 +15,7 @@ class Main():
 
         # Creates a new StreamAPI object and gets the incoming tweets
         streamAPI = StreamAPI()
-        streamAPI.getNextTweets(auth)
+        # streamAPI.getNextTweets(auth)
 
         # Creates a new SearchAPI object and gets the previous tweets
         searchAPI = SearchAPI()

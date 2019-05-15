@@ -1,4 +1,4 @@
-from DataParser import dataParser
+from src.DataParser import dataParser
 import tweepy
 
 

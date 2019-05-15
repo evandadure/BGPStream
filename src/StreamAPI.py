@@ -1,5 +1,5 @@
 from tweepy.streaming import StreamListener
-from DataParser import dataParser
+from src.DataParser import dataParser
 import tweepy
 import json
 
